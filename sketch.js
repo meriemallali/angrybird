@@ -1,24 +1,29 @@
 // Example is based on examples from: http://brm.io/matter-js/, https://github.com/shiffman/p5-matter
 // add also Benedict Gross credit
 
-var Engine = Matter.Engine;
-var Render = Matter.Render;
-var World = Matter.World;
-var Bodies = Matter.Bodies;
-var Body = Matter.Body;
-var Constraint = Matter.Constraint;
-var Mouse = Matter.Mouse;
-var MouseConstraint = Matter.MouseConstraint;
+
+// module aliases
+const Engine = Matter.Engine,
+  Render = Matter.Render,
+  Composite = Matter.Composite,
+  Bodies = Matter.Bodies,
+  Composites = Matter.Composites,
+  Body = Matter.Body,
+  Constraint = Matter.Constraint,
+  Mouse = Matter.Mouse,
+  MouseConstraint = Matter.MouseConstraint;
+
 
 var engine;
 var propeller;
-var boxes = [];
+let boxes = [];
 var birds = [];
 var colors = [];
+var shadesofgreen;
 var ground;
 var slingshotBird, slingshotConstraint;
-var angle=0;
-var angleSpeed=0;
+var angle = 0;
+var angleSpeed = 0;
 var canvas;
 ////////////////////////////////////////////////////////////
 function setup() {
@@ -53,24 +58,26 @@ function draw() {
   drawSlingshot();
 }
 ////////////////////////////////////////////////////////////
-//use arrow keys to control propeller
-function keyPressed(){
-  if (keyCode == LEFT_ARROW){
-    //your code here
+//use left and right arrow keys to control the propeller on screen 
+function keyPressed() {
+  if (keyCode == LEFT_ARROW) {
+    //if left arrow is pressed the angle speed is incremented by 0.01. 
+    angleSpeed += 0.01;
   }
-  else if (keyCode == RIGHT_ARROW){
-    //your code here
+  else if (keyCode == RIGHT_ARROW) {
+    //if right arrow is pressed the angle speed is decremented by 0.01.
+    angleSpeed -= 0.01;
   }
 }
 ////////////////////////////////////////////////////////////
-function keyTyped(){
+function keyTyped() {
   //if 'b' create a new bird to use with propeller
-  if (key==='b'){
+  if (key === 'b') {
     setupBird();
   }
 
   //if 'r' reset the slingshot
-  if (key==='r'){
+  if (key === 'r') {
     removeFromWorld(slingshotBird);
     removeFromWorld(slingshotConstraint);
     setupSlingshot();
@@ -83,7 +90,7 @@ function keyTyped(){
 
 //if mouse is released destroy slingshot constraint so that
 //slingshot bird can fly off
-function mouseReleased(){
+function mouseReleased() {
   setTimeout(() => {
     slingshotConstraint.bodyB = null;
     slingshotConstraint.pointA = { x: 0, y: 0 };
@@ -91,20 +98,20 @@ function mouseReleased(){
 }
 ////////////////////////////////////////////////////////////
 //tells you if a body is off-screen
-function isOffScreen(body){
+function isOffScreen(body) {
   var pos = body.position;
-  return (pos.y > height || pos.x<0 || pos.x>width);
+  return (pos.y > height || pos.x < 0 || pos.x > width);
 }
 ////////////////////////////////////////////////////////////
 //removes a body from the physics world
 function removeFromWorld(body) {
-  World.remove(engine.world, body);
+  Composite.remove(engine.world, body);
 }
 ////////////////////////////////////////////////////////////
 function drawVertices(vertices) {
   beginShape();
-  for (var i = 0; i < vertices.length; i++) {
-    vertex(vertices[i].x, vertices[i].y);
+  for (const element of vertices) {
+    vertex(element.x, element.y);
   }
   endShape(CLOSE);
 }
@@ -112,12 +119,12 @@ function drawVertices(vertices) {
 function drawConstraint(constraint) {
   push();
   var offsetA = constraint.pointA;
-  var posA = {x:0, y:0};
+  var posA = { x: 0, y: 0 };
   if (constraint.bodyA) {
     posA = constraint.bodyA.position;
   }
   var offsetB = constraint.pointB;
-  var posB = {x:0, y:0};
+  var posB = { x: 0, y: 0 };
   if (constraint.bodyB) {
     posB = constraint.bodyB.position;
   }
