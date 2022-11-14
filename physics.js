@@ -69,43 +69,58 @@ function setupTower() {
     return box;
   }
   //Matter.Composites.stack(xx, yy, columns, rows, columnGap, rowGap, callback) 
-  var stack = Composites.stack(width - 400, 2, 3, 6, 1, 1, makeRect);
+  var stack = Composites.stack(width - 400, 2, 3, 6, 0, 0, makeRect);
   boxes = stack.bodies;
 
-  // console.log(boxes)
-  // let shadesofgreen = Math.floor((Math.random() * 90) + 100);
+  //generating random shades of green using randomColor.js library, count to 18 for each box in the stack.
+  let shadesofgreen = randomColor({ hue: 'green', luminosity: 'dark', count: 18 })
+  //pushing the shades of the green into the colors array.
+  for (const element of shadesofgreen) {
+    colors.push(element)
+  }
 
-
-  // var shadesofgreen =  "#" + Math.floor((Math.random() * 90) + 100).toString(16).padStart(6, '0').toUpperCase();
-   colors.push(randomColor({ hue: 'green',luminosity: 'dark',count : 18}));
-  // console.log('greens :',shadesofgreen)
-  // for (let i = 0; i < 18; i++) {
-    // colors.push(shadesofgreen)
-
-  // }
-  console.log('greens', colors)
+  console.log('greens', shadesofgreen)
+  console.log('colors array', colors)
   Composite.add(engine.world, [stack]);
 }
 ////////////////////////////////////////////////////////////////
 //draws tower of boxes
 function drawTower() {
   push();
-  //your code here
-  for (const element of boxes) {
-    fill(colors[0][1])
+  noStroke();
+  //draw each box in different shade of green.
+  boxes.forEach((element, i) => {
+    fill(colors[i])
     drawVertices(element.vertices)
-  }
+  })
   pop();
 }
 ////////////////////////////////////////////////////////////////
 function setupSlingshot() {
-  //your code here
+  //
+  //Bodies.circle(x, y, radius, [options], [maxSides]) 
+  slingshotBird = Bodies.circle(width / 4, 100, 20, { friction: 0, restitution: 0.95 });
+  slingshotConstraint = Constraint.create({
+    pointA: { x: width / 4, y: 80 },
+    bodyB: slingshotBird,
+    pointB: { x: -15, y: -2 },
+    stiffness: 0.01,
+    damping: 0.0001
+  });
+  Composite.add(engine.world, [slingshotBird, slingshotConstraint]);
+
+
 }
 ////////////////////////////////////////////////////////////////
 //draws slingshot bird and its constraint
 function drawSlingshot() {
   push();
   // your code here
+  fill(207, 200, 81);
+  drawVertices(slingshotBird.vertices);
+  stroke(128);
+  strokeWeight(2);
+  drawConstraint(slingshotConstraint);
   pop();
 }
 /////////////////////////////////////////////////////////////////

@@ -19,7 +19,6 @@ var propeller;
 let boxes = [];
 var birds = [];
 var colors = [];
-var shadesofgreen;
 var ground;
 var slingshotBird, slingshotConstraint;
 var angle = 0;
