@@ -24,11 +24,13 @@ var slingshotBird, slingshotConstraint;
 var angle = 0;
 var angleSpeed = 0;
 var canvas;
+let timer = 60;  
 ////////////////////////////////////////////////////////////
 function setup() {
   canvas = createCanvas(1000, 600);
 
   engine = Engine.create();  // create an engine
+
 
   setupGround();
 
@@ -36,15 +38,19 @@ function setup() {
 
   setupTower();
 
-  setupSlingshot();
+  
 
   setupMouseInteraction();
+  setupSlingshot();
 }
 ////////////////////////////////////////////////////////////
 function draw() {
   background(0);
 
   Engine.update(engine);
+
+
+  CountDown();
 
   drawGround();
 
@@ -83,6 +89,34 @@ function keyTyped() {
   }
 }
 
+function StartGame(){
+  //some code here to start the game. q
+  start = "to start the game press space bar"
+  text(start, width/2,height/2);
+}
+
+function GameOver(){
+  text("game over! ", width/2, height/2)
+  noLoop();
+}
+
+function CountDown(){
+  fill(255)
+  strokeWeight(0);
+  textAlign(CENTER, CENTER);
+  textSize(45);
+  text(timer + 'sec', width- 100, height /8);
+  if(keyCode === 32){
+    if(frameCount % 60 == 0 && timer > 0){
+      timer--
+    }
+  
+  }
+
+  if(timer == 0){
+    GameOver();
+  }
+}
 //**********************************************************************
 //  HELPER FUNCTIONS - DO NOT WRITE BELOW THIS line
 //**********************************************************************

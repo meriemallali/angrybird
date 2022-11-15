@@ -12,7 +12,7 @@ function drawGround() {
   fill(128);
   drawVertices(ground.vertices);
   pop();
-}
+}1
 ////////////////////////////////////////////////////////////////
 function setupPropeller() {
   // your code here
@@ -39,7 +39,7 @@ function drawPropeller() {
 function setupBird() {
   var bird = Bodies.circle(mouseX, mouseY, 20, {
     friction: 0,
-    restitution: 0.95
+    restitution: .95
   });
   Matter.Body.setMass(bird, bird.mass * 10);
   Composite.add(engine.world, [bird]);
@@ -65,11 +65,11 @@ function setupTower() {
   //you code here
   // Make a single rectangle
   function makeRect(x, y) {
-    var box = Bodies.rectangle(x, y, 80, 80);
+    var box = Bodies.rectangle(x, y, 80, 80,{isStatic: false});
     return box;
   }
   //Matter.Composites.stack(xx, yy, columns, rows, columnGap, rowGap, callback) 
-  var stack = Composites.stack(width - 400, 2, 3, 6, 0, 0, makeRect);
+  var stack = Composites.stack(width - 400, 100, 3, 6, 0, 0, makeRect);
   boxes = stack.bodies;
 
   //generating random shades of green using randomColor.js library, count to 18 for each box in the stack.
@@ -92,6 +92,11 @@ function drawTower() {
   boxes.forEach((element, i) => {
     fill(colors[i])
     drawVertices(element.vertices)
+    if (isOffScreen(element)) {    //remove boxes that are off-screen
+      Composite.remove(engine.world, element);
+      boxes.splice(element, 1);
+    }
+    // console.log('boxes;',boxes)
   })
   pop();
 }
@@ -99,7 +104,7 @@ function drawTower() {
 function setupSlingshot() {
   //
   //Bodies.circle(x, y, radius, [options], [maxSides]) 
-  slingshotBird = Bodies.circle(width / 4, 100, 20, { friction: 0, restitution: 0.95 });
+  slingshotBird = Bodies.circle(width / 4, 100, 20, { friction: 0, restitution: .95 });
   slingshotConstraint = Constraint.create({
     pointA: { x: width / 4, y: 80 },
     bodyB: slingshotBird,
