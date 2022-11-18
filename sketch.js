@@ -1,6 +1,4 @@
 // Example is based on examples from: http://brm.io/matter-js/, https://github.com/shiffman/p5-matter
-// add also Benedict Gross credit
-
 
 // module aliases
 const Engine = Matter.Engine,
@@ -14,9 +12,11 @@ const Engine = Matter.Engine,
   MouseConstraint = Matter.MouseConstraint;
 
 
+//global variables
 var engine;
 var propeller;
 let boxes = [];
+let circles = [];
 var birds = [];
 var colors = [];
 var ground;
@@ -24,22 +24,19 @@ var slingshotBird, slingshotConstraint;
 var angle = 0;
 var angleSpeed = 0;
 var canvas;
-let timer = 60;  
+let timeLimit = 60, currentTime = 0, startTime = 0;
+let elapsedtime;
+
 ////////////////////////////////////////////////////////////
 function setup() {
   canvas = createCanvas(1000, 600);
-
+  frameRate(30) //set frame rate to 30 frames every second
   engine = Engine.create();  // create an engine
 
-
   setupGround();
-
   setupPropeller();
-
   setupTower();
-
-  
-
+  // setupPyramid();
   setupMouseInteraction();
   setupSlingshot();
 }
@@ -49,17 +46,13 @@ function draw() {
 
   Engine.update(engine);
 
-
   CountDown();
-
+  StartGame()
   drawGround();
-
   drawPropeller();
-
   drawTower();
-
+  // drawPyramid();
   drawBirds();
-
   drawSlingshot();
 }
 ////////////////////////////////////////////////////////////
@@ -73,6 +66,7 @@ function keyPressed() {
     //if right arrow is pressed the angle speed is decremented by 0.01.
     angleSpeed -= 0.01;
   }
+
 }
 ////////////////////////////////////////////////////////////
 function keyTyped() {
@@ -88,39 +82,54 @@ function keyTyped() {
     setupSlingshot();
   }
 }
+////////////////////////////////////////////////////////////
+function StartGame() {
+  //instructions to start the game. 
+  elapsedtime = millis();
+  if (elapsedtime < 4000) {
+    fill(255)
+    strokeWeight(0);
+    textAlign(CENTER, CENTER);
+    textSize(35);
+    start = "you have to remove all boxes\n from screen within 60 seconds\n use the b to shoot birds";
+    text(start, width / 2, height / 9);
+  }
 
-function StartGame(){
-  //some code here to start the game. q
-  start = "to start the game press space bar"
-  text(start, width/2,height/2);
 }
-
-function GameOver(){
-  text("game over! ", width/2, height/2)
+////////////////////////////////////////////////////////////
+//call gameOver when countdown timer of 60s is passed.
+function GameOver() {
+  text("game over! ", width / 2, height / 2);
   noLoop();
 }
+//returns the converted number into min:sec.
+function convertSeconds(s) {
+  var min = floor(s / 60);
+  var sec = s % 60;
+  return nf(min, 2) + ':' + nf(sec, 2);
+}
+////////////////////////////////////////////////////////////
 
-function CountDown(){
-  fill(255)
+//compute how much time is left
+//timer start at 01:00, if time left is equal to 0 gameOver is called.
+function CountDown() {
+  startTime = millis();
+  fill(255);
   strokeWeight(0);
   textAlign(CENTER, CENTER);
   textSize(45);
-  text(timer + 'sec', width- 100, height /8);
-  if(keyCode === 32){
-    if(frameCount % 60 == 0 && timer > 0){
-      timer--
-    }
-  
+  timer = convertSeconds(timeLimit - currentTime);
+  text(timer, width - 100, height / 8);
+  currentTime = floor((millis() - startTime) / 1000);
+  if (frameCount % 60 == 0 && timeLimit > 0) {
+    timeLimit--;
   }
-
-  if(timer == 0){
+  if (timeLimit == 0) {
     GameOver();
   }
 }
-//**********************************************************************
-//  HELPER FUNCTIONS - DO NOT WRITE BELOW THIS line
-//**********************************************************************
-
+////////////////////////////////////////////////////////////
+//  HELPER FUNCTIONS 
 //if mouse is released destroy slingshot constraint so that
 //slingshot bird can fly off
 function mouseReleased() {
@@ -133,7 +142,7 @@ function mouseReleased() {
 //tells you if a body is off-screen
 function isOffScreen(body) {
   var pos = body.position;
-  return (pos.y > height || pos.x < 0 || pos.x > width);
+  return (pos.y > height + 200 || pos.x < 0 || pos.x > width + 100);
 }
 ////////////////////////////////////////////////////////////
 //removes a body from the physics world
