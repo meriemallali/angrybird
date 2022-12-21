@@ -90,9 +90,9 @@ function StartGame() {
     fill(255)
     strokeWeight(0);
     textAlign(CENTER, CENTER);
-    textSize(35);
+    textSize(25);
     start = "you have to remove all boxes\n from screen within 60 seconds\n use the b to shoot birds";
-    text(start, width / 2, height / 9);
+    text(start, width / 2, height / 11);
   }
 
 }
@@ -174,6 +174,7 @@ function drawConstraint(constraint) {
   stroke(255);
   line(
     posA.x + offsetA.x,
+
     posA.y + offsetA.y,
     posB.x + offsetB.x,
     posB.y + offsetB.y
